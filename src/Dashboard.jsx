@@ -6,6 +6,32 @@ function Dashboard() {
   const [metrics, setMetrics] = useState([]);
   useEffect(() => {
     fetchMetrics();
+
+    const channel = supabase
+      .channel("deal-changes")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "sales_deals",
+        },
+        (payload) => {
+          const { new: newRecord, eventType } = payload;
+          const { name, value } = newRecord;
+
+          if (eventType === "INSERT") {
+            console.log("New record added:", name, value);
+          }
+          fetchMetrics();
+        }
+      )
+      .subscribe();
+
+    // Clean up subscription
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   async function fetchMetrics() {
