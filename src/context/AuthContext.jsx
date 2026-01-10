@@ -18,7 +18,13 @@ export const AuthContextProvider = ({ children }) => {
         console.log("Session error: ", err);
       }
     }
+    //1) Check on 1st render for a session (getSession())
     getInitialSession();
+    //2) Listen for changes in auth state (.onAuthStateChange())
+    supabase.auth.onAuthStateChange((event, session) => {
+      console.log("Auth event: ", event);
+      setSession(session);
+    });
   }, []);
 
   return (
