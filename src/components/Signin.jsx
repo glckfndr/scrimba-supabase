@@ -1,25 +1,34 @@
 import { useActionState } from "react";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate, Link } from "react-router-dom";
+
 const Signin = () => {
+  const { signInUser } = useAuth();
+  const navigate = useNavigate();
+
   const [error, submitAction, isPending] = useActionState(
-    async (prev, formData) => {
+    async (previousState, formData) => {
       const email = formData.get("email");
       const password = formData.get("password");
+
+      const {
+        success,
+        data,
+        error: signInError,
+      } = await signInUser(email, password);
+
+      if (signInError) {
+        return new Error(signInError);
+      }
+      if (success && data?.session) {
+        navigate("/dashboard");
+        return null;
+      }
+      return null;
     },
     null,
   );
-  /**
-Challenge:
-* 1) Import the 'useActionState' hook
-* 2) Call the hook at the top level of the component, destructuring three values:
-			 - 'error' (state for error handling)
-			 - 'submitAction' (the form action function)
-			 - 'isPending' (loading state boolean)
-* 3) Pass two arguments to useActionState:
-			- First argument: an async arrow function with 2 parameters
-			- Second argument: initial state value of null
-* 4) Inside the async function, extract the email and password into variables
-* 5) Add the 'sumbmitAction' to your form's action prop
-*/
+
   return (
     <>
       <h1 className="landing-header">Paper Like A Boss</h1>
@@ -36,9 +45,10 @@ Challenge:
 
           <h2 className="form-title">Sign in</h2>
           <p>
-            Don't have an account yet? {/*<Link className="form-link">*/}
-            Sign up
-            {/*</Link>*/}
+            Don't have an account yet?{" "}
+            <Link className="form-link" to="/signup">
+              Sign up
+            </Link>
           </p>
 
           <label htmlFor="email">Email</label>
@@ -50,9 +60,9 @@ Challenge:
             placeholder=""
             required
             aria-required="true"
-            //aria-invalid=
-            //aria-describedby=
-            //disabled=
+            aria-invalid={error ? "true" : "false"}
+            aria-describedby={error ? "signin-error" : undefined}
+            disabled={isPending}
           />
 
           <label htmlFor="password">Password</label>
@@ -64,22 +74,29 @@ Challenge:
             placeholder=""
             required
             aria-required="true"
-            //aria-invalid=
-            //aria-describedby=
-            //disabled=
+            aria-invalid={error ? "true" : "false"}
+            aria-describedby={error ? "signin-error" : undefined}
+            disabled={isPending}
           />
 
           <button
             type="submit"
+            disabled={isPending}
             className="form-button"
-            //className=
-            //aria-busy=
+            aria-busy={isPending}
           >
-            Sign In
-            {/*'Signing in...' when pending*/}
+            {isPending ? "Signing in..." : "Sign In"}
           </button>
 
-          {/* Error message */}
+          {error && (
+            <div
+              id="signin-error"
+              role="alert"
+              className="sign-form-error-message"
+            >
+              {error.message}
+            </div>
+          )}
         </form>
       </div>
     </>
