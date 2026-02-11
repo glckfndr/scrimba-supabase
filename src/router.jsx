@@ -1,27 +1,25 @@
-import Signin from './components/Signin';
-import Signup from './components/Signup';
-import Header from './components/Header';
-import Dashboard from './routes/Dashboard';
-import { createBrowserRouter } from 'react-router-dom';
-
-/**
-Challenge:
-* 1) Create a new route with path '/signup'
-* 2) Set the element as the 'Signup.jsx' component
-* 3) Save and test your path by navigating to '/signup'
-*/
+import Signin from "./components/Signin";
+import Signup from "./components/Signup";
+import Header from "./components/Header";
+import Dashboard from "./routes/Dashboard";
+import RootRedirect from "./routes/RootRedirect";
+import { createBrowserRouter } from "react-router-dom";
 
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
+    element: <RootRedirect />,
+  },
+  {
+    path: "/signin",
     element: <Signin />,
   },
   {
-    path: '/signup',
+    path: "/signup",
     element: <Signup />,
   },
   {
-    path: '/dashboard',
+    path: "/dashboard",
     element: (
       <>
         <Header />
