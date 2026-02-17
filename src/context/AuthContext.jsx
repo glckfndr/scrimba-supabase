@@ -28,7 +28,7 @@ export const AuthContextProvider = ({ children }) => {
     });
   }, []);
 
-  //Auth functions (signin, signup, logout)
+  //Auth functions
   const signInUser = async (email, password) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -49,35 +49,41 @@ export const AuthContextProvider = ({ children }) => {
       };
     }
   };
-  const signOutUser = async () => {
+
+  const signOut = async () => {
     try {
       const { error } = await supabase.auth.signOut();
       if (error) {
         console.error("Supabase sign-out error:", error.message);
         return { success: false, error: error.message };
       }
-      console.log("Supabase sign-out success");
       return { success: true };
     } catch (error) {
       console.error("Unexpected error during sign-out:", error.message);
       return {
         success: false,
-        error: "An unexpected error occurred. Please try again.",
+        error: "An unexpected error occurred during sign out.",
       };
     }
   };
 
-  const signUpNewUser = async (email, password) => {
+  const signUpNewUser = async (email, password, name, accountType) => {
     try {
       const { data, error } = await supabase.auth.signUp({
-        email: email.trim().toLowerCase(),
+        email: email.toLowerCase(),
         password: password,
+        options: {
+          data: {
+            name: name,
+            account_type: accountType,
+          },
+        },
       });
       if (error) {
         console.error("Supabase sign-up error:", error.message);
         return { success: false, error: error.message };
       }
-      console.log("Supabase sign-up success:", data);
+      // console.log('Supabase sign-up success:', data);
       return { success: true, data };
     } catch (error) {
       console.error("Unexpected error during sign-up:", error.message);
@@ -90,7 +96,7 @@ export const AuthContextProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider
-      value={{ session, signInUser, signOutUser, signUpNewUser }}
+      value={{ session, signInUser, signOut, signUpNewUser }}
     >
       {children}
     </AuthContext.Provider>
