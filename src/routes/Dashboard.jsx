@@ -25,7 +25,7 @@ function Dashboard() {
             console.log("New record added:", name, value);
           }
           fetchMetrics();
-        }
+        },
       )
       .subscribe();
 
@@ -39,9 +39,9 @@ function Dashboard() {
     try {
       const { data, error } = await supabase.from("sales_deals").select(
         `
-          name,
+          user_id,
           value.sum()
-          `
+          `,
       );
       if (error) throw error;
       setMetrics(data);
@@ -53,7 +53,7 @@ function Dashboard() {
 
   const chartData = [
     {
-      data: metrics.map((m) => ({ primary: m.name, secondary: m.sum })),
+      data: metrics.map((m) => ({ primary: m.user_id, secondary: m.sum })),
     },
   ];
   const primaryAxis = {
@@ -103,7 +103,7 @@ function Dashboard() {
           />
         </div>
       </div>
-      <Form metrics={metrics} />
+      <Form />
     </div>
   );
 }

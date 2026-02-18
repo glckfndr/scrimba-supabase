@@ -3,14 +3,14 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Header() {
-  const { signOutUser, session } = useAuth();
+  const { signOut, session } = useAuth();
   const navigate = useNavigate();
   const [error, setError] = useState(null);
 
   const handleSignOut = async (e) => {
     e.preventDefault();
 
-    const { success, error } = await signOutUser();
+    const { success, error } = await signOut();
     if (success) {
       navigate("/signin");
     } else {
